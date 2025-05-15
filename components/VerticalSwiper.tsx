@@ -59,79 +59,21 @@ const buttonAreas = [
 
 export default function VerticalSwiper() {
   const swiperRef = useRef<SwiperRef>(null);
-  const [showLoading, setShowLoading] = useState(false);
-  const [loadingComplete, setLoadingComplete] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // スワイプ制御のためのイベントリスナー
-  useEffect(() => {
-    if (!isMounted) return;
-
-    const swiper = swiperRef.current?.swiper;
-    if (!swiper) return;
-
-    // スライド変更時のイベントリスナー
-    const handleSlideChange = () => {
-      const currentIndex = swiper.activeIndex;
-      
-      // 1枚目はスワイプ可能、2枚目以降はスワイプ不可
-      if (currentIndex >= 1) {
-        swiper.allowTouchMove = false; // タッチによるスワイプを無効化
-        swiper.mousewheel.disable(); // マウスホイールを無効化
-      } else {
-        swiper.allowTouchMove = true; // タッチによるスワイプを有効化
-        swiper.mousewheel.enable(); // マウスホイールを有効化
-      }
-    };
-
-    // 初期状態の設定
-    handleSlideChange();
-    
-    // イベントリスナーの登録
-    swiper.on('slideChange', handleSlideChange);
-    
-    // クリーンアップ
-    return () => {
-      swiper.off('slideChange', handleSlideChange);
-    };
-  }, [isMounted]);
-
-  if (!isMounted) {
-    return null;
-  }
-
-  // 画像上のクリック位置を計算してボタン領域内かチェック
   const handleImageClick = (e: React.MouseEvent<HTMLDivElement>, slideIndex: number) => {
-    if (slideIndex === 0 || slideIndex >= 4) return; // 1枚目と5枚目はスキップ
-    
+    if (slideIndex === 0 || slideIndex >= buttonAreas.length - 1) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
-    
-    // ボタン領域内かチェック
     const areas = buttonAreas[slideIndex];
     for (const [x1, y1, x2, y2] of areas) {
       if (x >= x1 && x <= x2 && y >= y1 && y <= y2) {
-        // 4枚目の場合はローディング画面を表示
-        if (slideIndex === 3) {
-          setShowLoading(true);
-          // 3秒後にローディング完了、その後最終スライドへ
-          setTimeout(() => {
-            setLoadingComplete(true);
-            setTimeout(() => {
-              swiperRef.current?.swiper.slideNext();
-              setShowLoading(false);
-              setLoadingComplete(false);
-            }, 500);
-          }, 3000);
-        } else {
-          // それ以外は通常通り次のスライドへ
-          swiperRef.current?.swiper.slideNext();
-        }
+        swiperRef.current?.swiper.slideNext();
         break;
       }
     }
@@ -142,20 +84,12 @@ export default function VerticalSwiper() {
     window.open(CTA_URL, '_blank');
   };
 
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <div className="fixed inset-0 w-full h-full overflow-hidden">
-      {/* ローディング画面 */}
-      {showLoading && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-80">
-          <div className="text-white text-xl mb-4">
-            {loadingComplete ? "完了しました！" : "アンケート結果を出しています..."}
-          </div>
-          {!loadingComplete && (
-            <div className="w-12 h-12 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
-          )}
-        </div>
-      )}
-      
       <Swiper
         ref={swiperRef}
         direction={'vertical'}
@@ -206,7 +140,10 @@ export default function VerticalSwiper() {
               >
                 {/* 1枚目だけスワイプ案内をCTAの直上に絶対配置 */}
                 {index === 0 && (
-                  <div className="absolute top-0 left-0 w-full flex flex-col items-center z-10">
+                  <div
+                    className="absolute top-0 left-0 w-full flex flex-col items-center z-10"
+                    style={{ marginTop: '-23px' }}
+                  >
                     <span className="text-2xl animate-bounce text-gray-400">↑</span>
                     <span className="text-gray-500 text-sm tracking-wide font-medium mt-1">スワイプ</span>
                   </div>
@@ -216,7 +153,7 @@ export default function VerticalSwiper() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full h-full flex items-center justify-center"
-                  style={{ maxHeight: '100%', maxWidth: '100%' }}
+                  style={{ maxHeight: '100%', maxWidth: '100%', marginTop: '-24px' }}
                 >
                   <img
                     src={bottomImages[index]}
