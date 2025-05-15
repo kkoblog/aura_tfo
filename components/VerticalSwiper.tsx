@@ -1,5 +1,6 @@
 'use client';  // これを追加して、クライアントコンポーネントとして指定
 
+import * as React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Mousewheel, Pagination, EffectFade } from 'swiper/modules';
 import { useRef, useEffect, useState } from 'react';
@@ -8,52 +9,68 @@ import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 import type { SwiperRef } from 'swiper/react';
 
-// メイン画像のパス（既存）
+// メイン画像のパス（1〜11まで）
 const mainImages = [
-  '/images/iti.png',
-  '/images/ni.png',
-  '/images/san.png',
-  '/images/yon.png',
-  '/images/go.png',
+  '/images/1.png',
+  '/images/2.png',
+  '/images/3.png',
+  '/images/4.png',
+  '/images/5.png',
+  '/images/6.png',
+  '/images/7.png',
+  '/images/8.png',
+  '/images/9.png',
+  '/images/10.png',
+  '/images/11.png',
 ];
 
-// 下部に表示する画像のパス
+// 下部に表示する画像のパス（仮に全てcta.pngで揃えます。必要に応じて変更してください）
 const bottomImages = [
-  '/images/tate.png',
-  '/images/cta.png',
-  '/images/cta.png',
-  '/images/cta.png',
-  '/images/cta.png',
+  '/images/cta.png', // 1枚目
+  '/images/cta.png', // 2枚目
+  '/images/cta.png', // 3枚目
+  '/images/cta.png', // 4枚目
+  '/images/cta.png', // 5枚目
+  '/images/cta.png', // 6枚目
+  '/images/cta.png', // 7枚目
+  '/images/cta.png', // 8枚目
+  '/images/cta.png', // 9枚目
+  '/images/cta.png', // 10枚目
+  '/images/cta.png', // 11枚目
 ];
 
 // 公式LINEのURL
-const LINE_URL = 'https://lin.ee/5BbBz9O';
+const CTA_URL = 'https://beauty.hotpepper.jp/slnH000291361/';
 
-// ボタン領域の座標
+// ボタン領域の座標（2〜10枚目に仮でボタン領域を設定。必要に応じて調整してください）
 const buttonAreas = [
-  [], // 1枚目はボタンなし（スワイプのみ）
-  [
-    [20, 55, 80, 65], // 「はい」ボタンの領域
-    [20, 70, 80, 80]  // 「いいえ」ボタンの領域
-  ],
-  [
-    [20, 55, 80, 65], // 3枚目の「はい」ボタンの領域
-    [20, 70, 80, 80]  // 3枚目の「いいえ」ボタンの領域
-  ],
-  [
-    [20, 55, 80, 65], // 4枚目の「はい」ボタンの領域
-    [20, 70, 80, 80]  // 4枚目の「いいえ」ボタンの領域
-  ],
-  [] // 5枚目はボタンなし
+  [], // 1枚目はボタンなし
+  [ [20, 55, 80, 65], [20, 70, 80, 80] ], // 2枚目
+  [ [20, 55, 80, 65], [20, 70, 80, 80] ], // 3枚目
+  [ [20, 55, 80, 65], [20, 70, 80, 80] ], // 4枚目
+  [ [20, 55, 80, 65], [20, 70, 80, 80] ], // 5枚目
+  [ [20, 55, 80, 65], [20, 70, 80, 80] ], // 6枚目
+  [ [20, 55, 80, 65], [20, 70, 80, 80] ], // 7枚目
+  [ [20, 55, 80, 65], [20, 70, 80, 80] ], // 8枚目
+  [ [20, 55, 80, 65], [20, 70, 80, 80] ], // 9枚目
+  [ [20, 55, 80, 65], [20, 70, 80, 80] ], // 10枚目
+  [], // 11枚目はボタンなし
 ];
 
 export default function VerticalSwiper() {
   const swiperRef = useRef<SwiperRef>(null);
   const [showLoading, setShowLoading] = useState(false);
   const [loadingComplete, setLoadingComplete] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // スワイプ制御のためのイベントリスナー
   useEffect(() => {
+    if (!isMounted) return;
+
     const swiper = swiperRef.current?.swiper;
     if (!swiper) return;
 
@@ -81,7 +98,11 @@ export default function VerticalSwiper() {
     return () => {
       swiper.off('slideChange', handleSlideChange);
     };
-  }, []);
+  }, [isMounted]);
+
+  if (!isMounted) {
+    return null;
+  }
 
   // 画像上のクリック位置を計算してボタン領域内かチェック
   const handleImageClick = (e: React.MouseEvent<HTMLDivElement>, slideIndex: number) => {
@@ -118,7 +139,7 @@ export default function VerticalSwiper() {
 
   // CTA画像クリック時の処理
   const handleCtaClick = () => {
-    window.open(LINE_URL, '_blank');
+    window.open(CTA_URL, '_blank');
   };
 
   return (
@@ -159,43 +180,52 @@ export default function VerticalSwiper() {
         {mainImages.map((image, index) => (
           <SwiperSlide 
             key={index} 
-            className={`w-full h-full bg-black flex flex-col items-center justify-center p-4 ${index > 0 ? 'swiper-no-swiping' : ''}`}
+            className="w-full h-full bg-white p-0 m-0"
           >
-            {/* メイン画像 - クリックイベント付き */}
-            <div 
-              className="relative w-full flex-1 flex items-center justify-center"
-              onClick={(e) => handleImageClick(e, index)}
-            >
-              <img
-                src={image}
-                alt={`Slide ${index + 1}`}
-                className="max-w-full max-h-full object-contain touch-none select-none"
-                style={{ 
-                  width: 'auto', 
-                  height: 'auto', 
-                  maxWidth: '100%', 
-                  maxHeight: '100%'
-                }}
-              />
-            </div>
-            
-            {/* 下部画像 - 2枚目以降はクリック可能なCTA */}
-            <div 
-              className={`w-full mt-4 flex justify-center ${index > 0 ? 'cursor-pointer' : ''}`} 
-              style={{ maxHeight: '20vh' }}
-              onClick={index > 0 ? handleCtaClick : undefined}
-            >
-              <img
-                src={bottomImages[index]}
-                alt={index === 0 ? `Bottom image` : 'LINE公式アカウントに登録'}
-                className="max-w-full max-h-full object-contain select-none"
-                style={{ 
-                  width: 'auto', 
-                  height: 'auto', 
-                  maxWidth: '100%', 
-                  maxHeight: '100%'
-                }}
-              />
+            <div className="flex flex-col w-full h-[100dvh]" style={{
+              paddingTop: 'env(safe-area-inset-top)',
+              paddingBottom: 'env(safe-area-inset-bottom)',
+              paddingLeft: 'env(safe-area-inset-left)',
+              paddingRight: 'env(safe-area-inset-right)',
+            }}>
+              {/* メイン画像エリア */}
+              <div
+                className="flex items-center justify-center w-full h-[70vh]"
+                onClick={(e) => handleImageClick(e, index)}
+              >
+                <img
+                  src={image}
+                  alt={`Slide ${index + 1}`}
+                  className="w-full h-full object-contain select-none"
+                  style={{ maxWidth: '100vw', maxHeight: '70vh' }}
+                />
+              </div>
+              {/* CTA画像エリア */}
+              <div
+                className="relative w-full flex items-center justify-center h-[30vh]"
+              >
+                {/* 1枚目だけスワイプ案内をCTAの直上に絶対配置 */}
+                {index === 0 && (
+                  <div className="absolute top-0 left-0 w-full flex flex-col items-center z-10">
+                    <span className="text-2xl animate-bounce text-gray-400">↑</span>
+                    <span className="text-gray-500 text-sm tracking-wide font-medium mt-1">スワイプ</span>
+                  </div>
+                )}
+                <a
+                  href="https://beauty.hotpepper.jp/slnH000291361/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full h-full flex items-center justify-center"
+                  style={{ maxHeight: '100%', maxWidth: '100%' }}
+                >
+                  <img
+                    src={bottomImages[index]}
+                    alt={index === 0 ? `Bottom image` : 'LINE公式アカウントに登録'}
+                    className="w-full h-full object-contain select-none cursor-pointer"
+                    style={{ maxHeight: '100%', maxWidth: '100%' }}
+                  />
+                </a>
+              </div>
             </div>
           </SwiperSlide>
         ))}
