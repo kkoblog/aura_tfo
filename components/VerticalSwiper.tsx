@@ -26,21 +26,21 @@ const mainImages = [
 
 // 下部に表示する画像のパス（仮に全てcta.pngで揃えます。必要に応じて変更してください）
 const bottomImages = [
-  '/images/cta.png', // 1枚目
-  '/images/cta.png', // 2枚目
-  '/images/cta.png', // 3枚目
-  '/images/cta.png', // 4枚目
-  '/images/cta.png', // 5枚目
-  '/images/cta.png', // 6枚目
-  '/images/cta.png', // 7枚目
-  '/images/cta.png', // 8枚目
-  '/images/cta.png', // 9枚目
-  '/images/cta.png', // 10枚目
-  '/images/cta.png', // 11枚目
+  '/images/cta2.png', // 1枚目
+  '/images/cta2.png', // 2枚目
+  '/images/cta2.png', // 3枚目
+  '/images/cta2.png', // 4枚目
+  '/images/cta2.png', // 5枚目
+  '/images/cta2.png', // 6枚目
+  '/images/cta2.png', // 7枚目
+  '/images/cta2.png', // 8枚目
+  '/images/cta2.png', // 9枚目
+  '/images/cta2.png', // 10枚目
+  '/images/cta2.png', // 11枚目
 ];
 
 // 公式LINEのURL
-const CTA_URL = 'https://beauty.hotpepper.jp/slnH000291361/';
+const CTA_URL = 'https://lin.ee/eRDCJbo';
 
 // ボタン領域の座標（2〜10枚目に仮でボタン領域を設定。必要に応じて調整してください）
 const buttonAreas = [
@@ -57,6 +57,43 @@ const buttonAreas = [
   [], // 11枚目はボタンなし
 ];
 
+function SwipeGuide() {
+  const [show, setShow] = useState(true);
+  useEffect(() => {
+    const timer = setTimeout(() => setShow(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+  if (!show) return null;
+  return (
+    <div
+      className="absolute top-0 right-0 w-full flex flex-col items-end z-10"
+      style={{ marginTop: '-20px' }}
+    >
+      <div className="relative flex flex-col items-center" style={{ width: 80, height: 120 }}>
+        {/* 上矢印（アニメーションで伸びる） */}
+        <span
+          className="text-4xl text-blue-400"
+          style={{
+            display: 'inline-block',
+            animation: 'arrowStretch 1.2s infinite',
+            transformOrigin: 'bottom center',
+          }}
+        >
+          ↑
+        </span>
+        <style jsx>{`
+          @keyframes arrowStretch {
+            0% { transform: scaleY(1); opacity: 1; }
+            40% { transform: scaleY(2); opacity: 1; }
+            60% { transform: scaleY(2); opacity: 1; }
+            100% { transform: scaleY(1); opacity: 1; }
+          }
+        `}</style>
+      </div>
+    </div>
+  );
+}
+
 export default function VerticalSwiper() {
   const swiperRef = useRef<SwiperRef>(null);
   const [isMounted, setIsMounted] = useState(false);
@@ -64,6 +101,13 @@ export default function VerticalSwiper() {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Swiperのスライド変更時にClarityへカスタムイベント送信
+  const handleSlideChange = () => {
+    if (typeof window !== 'undefined' && (window as any).clarity && swiperRef.current?.swiper) {
+      (window as any).clarity('set', 'slide', swiperRef.current.swiper.activeIndex);
+    }
+  };
 
   const handleImageClick = (e: React.MouseEvent<HTMLDivElement>, slideIndex: number) => {
     if (slideIndex === 0 || slideIndex >= buttonAreas.length - 1) return;
@@ -96,10 +140,7 @@ export default function VerticalSwiper() {
         slidesPerView={1}
         spaceBetween={0}
         mousewheel={true}
-        pagination={{
-          clickable: true,
-          dynamicBullets: true,
-        }}
+        pagination={{ clickable: true, dynamicBullets: true }}
         effect={'fade'}
         fadeEffect={{ crossFade: true }}
         modules={[Mousewheel, Pagination, EffectFade]}
@@ -110,6 +151,7 @@ export default function VerticalSwiper() {
         preventClicks={true}
         noSwipingClass="swiper-no-swiping"
         noSwipingSelector=".pagination-bullet"
+        onSlideChange={handleSlideChange}
       >
         {mainImages.map((image, index) => (
           <SwiperSlide 
@@ -140,13 +182,7 @@ export default function VerticalSwiper() {
               >
                 {/* 1枚目だけスワイプ案内をCTAの直上に絶対配置 */}
                 {index === 0 && (
-                  <div
-                    className="absolute top-0 left-0 w-full flex flex-col items-center z-10"
-                    style={{ marginTop: '-23px' }}
-                  >
-                    <span className="text-2xl animate-bounce text-gray-400">↑</span>
-                    <span className="text-gray-500 text-sm tracking-wide font-medium mt-1">スワイプ</span>
-                  </div>
+                  <SwipeGuide />
                 )}
                 <a
                   href="https://beauty.hotpepper.jp/slnH000291361/"
