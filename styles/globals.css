@@ -155,11 +155,12 @@ html, body {
   }
   
   .swiper-pagination {
-    padding: 0 10px;
+    padding: 10px 0;
+    bottom: 0 !important;
   }
 }
 
-/* 横スクロール防止 */
+/* スクロール防止 */
 body {
   overscroll-behavior: none;
 }

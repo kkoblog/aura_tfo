@@ -58,40 +58,7 @@ const buttonAreas = [
 ];
 
 function SwipeGuide() {
-  const [show, setShow] = useState(true);
-  useEffect(() => {
-    const timer = setTimeout(() => setShow(false), 3000);
-    return () => clearTimeout(timer);
-  }, []);
-  if (!show) return null;
-  return (
-    <div
-      className="absolute top-0 right-0 w-full flex flex-col items-end z-10"
-      style={{ marginTop: '-20px' }}
-    >
-      <div className="relative flex flex-col items-center" style={{ width: 80, height: 120 }}>
-        {/* 上矢印（アニメーションで伸びる） */}
-        <span
-          className="text-4xl text-blue-400"
-          style={{
-            display: 'inline-block',
-            animation: 'arrowStretch 1.2s infinite',
-            transformOrigin: 'bottom center',
-          }}
-        >
-          ↑
-        </span>
-        <style jsx>{`
-          @keyframes arrowStretch {
-            0% { transform: scaleY(1); opacity: 1; }
-            40% { transform: scaleY(2); opacity: 1; }
-            60% { transform: scaleY(2); opacity: 1; }
-            100% { transform: scaleY(1); opacity: 1; }
-          }
-        `}</style>
-      </div>
-    </div>
-  );
+  return null; // スワイプガイドを非表示にする
 }
 
 export default function VerticalSwiper() {
@@ -136,7 +103,7 @@ export default function VerticalSwiper() {
     <div className="fixed inset-0 w-full h-full overflow-hidden">
       <Swiper
         ref={swiperRef}
-        direction={'vertical'}
+        direction={'horizontal'}
         slidesPerView={1}
         spaceBetween={0}
         mousewheel={true}
@@ -180,10 +147,6 @@ export default function VerticalSwiper() {
               <div
                 className="relative w-full flex items-center justify-center h-[30vh]"
               >
-                {/* 1枚目だけスワイプ案内をCTAの直上に絶対配置 */}
-                {index === 0 && (
-                  <SwipeGuide />
-                )}
                 <a
                   href="https://beauty.hotpepper.jp/slnH000291361/"
                   target="_blank"
