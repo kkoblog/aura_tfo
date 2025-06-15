@@ -136,12 +136,34 @@ export default function VerticalSwiper() {
                 className="flex items-center justify-center w-full h-[70vh]"
                 onClick={(e) => handleImageClick(e, index)}
               >
-                <img
-                  src={image}
-                  alt={`Slide ${index + 1}`}
-                  className="w-full h-full object-contain select-none"
-                  style={{ maxWidth: '100vw', maxHeight: '70vh' }}
-                />
+                {index === 0 ? (
+                  <video
+                    src="/images/top.mov"
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    controls={false}
+                    style={{
+                      width: '100%',
+                      height: 'auto',
+                      maxHeight: '70vh',
+                      maxWidth: '100vw',
+                      aspectRatio: '9/16',
+                      display: 'block',
+                      margin: '0 auto',
+                      background: '#fff',
+                      objectFit: 'contain',
+                    }}
+                  />
+                ) : (
+                  <img
+                    src={image}
+                    alt={`Slide ${index + 1}`}
+                    className="w-full h-full object-contain select-none"
+                    style={{ maxWidth: '100vw', maxHeight: '70vh' }}
+                  />
+                )}
               </div>
               {/* CTA画像エリア */}
               <div
